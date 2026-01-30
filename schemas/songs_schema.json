@@ -1,0 +1,17 @@
+{
+  "table": "songs",
+  "description": "Individual song tracks with metadata and YouTube Music URLs",
+  "columns": [
+    {"name": "song_uuid", "type": "string", "required": true, "primary_key": true, "description": "Unique song identifier (UUID v4)"},
+    {"name": "album_uuid", "type": "string", "required": true, "foreign_key": "albums.album_uuid", "description": "Reference to parent album"},
+    {"name": "track_number", "type": "integer", "required": false, "description": "Position in album (1, 2, 3...)"},
+    {"name": "song_title", "type": "string", "required": true, "description": "Song name"},
+    {"name": "song_singers", "type": "string", "required": true, "description": "Vocalists (comma-separated)"},
+    {"name": "song_rating", "type": "float", "required": true, "min": 0.0, "max": 5.0, "description": "User/critic rating (0-5 scale)"},
+    {"name": "youtube_url", "type": "url", "required": false, "description": "Official YouTube video (usually with video)"},
+    {"name": "music_yt_url_1", "type": "url", "required": false, "description": "YouTube Music URL #1 (highest quality match)"},
+    {"name": "music_yt_url_2", "type": "url", "required": false, "description": "YouTube Music URL #2 (alternative)"},
+    {"name": "music_yt_url_3", "type": "url", "required": false, "description": "YouTube Music URL #3 (backup)"}
+  ],
+  "indexes": ["album_uuid", "song_rating"]
+}

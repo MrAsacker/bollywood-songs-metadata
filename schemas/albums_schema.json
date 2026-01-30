@@ -1,0 +1,15 @@
+{
+  "table": "albums",
+  "description": "Film albums and music collections",
+  "columns": [
+    {"name": "album_uuid", "type": "string", "required": true, "primary_key": true, "description": "Unique album identifier (UUID v4)"},
+    {"name": "album_title", "type": "string", "required": true, "description": "Movie/album name"},
+    {"name": "album_year", "type": "integer", "required": true, "min": 1940, "max": 2030, "description": "Release year"},
+    {"name": "album_category", "type": "string", "required": false, "enum": ["Soundtrack", "Album", "Single", "Compilation", "Remix"], "description": "Type of release"},
+    {"name": "album_music_director", "type": "string", "required": true, "description": "Composer/Music Director"},
+    {"name": "album_lyricist", "type": "string", "required": false, "description": "Primary lyricist (comma-separated if multiple)"},
+    {"name": "album_label", "type": "string", "required": false, "description": "Music label (T-Series, Zee Music, etc.)"},
+    {"name": "album_rating", "type": "float", "required": false, "min": 0.0, "max": 5.0, "description": "Overall album rating"}
+  ],
+  "indexes": ["album_year", "album_music_director"]
+}
