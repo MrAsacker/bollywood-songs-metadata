@@ -1,226 +1,243 @@
-```markdown
-# 🎵 Bollywood Songs Metadata Dataset
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![Dataset](https://img.shields.io/badge/dataset-8%20decades-green.svg)]()
-[![Maintenance](https://img.shields.io/badge/maintained-yes-success.svg)]()
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://makeapullrequest.com)
+# 🎶 Bollywood Songs & Albums Metadata Dataset (1931–2025)
 
-> A comprehensive, structured dataset of Bollywood (Hindi Cinema) songs metadata spanning from 1930s to 2020s, featuring quality ratings, YouTube Music links, and multi-tier filtering for research and application development.
+[![Dataset](https://img.shields.io/badge/Dataset-Bollywood-blueviolet)](#)
+[![Years](https://img.shields.io/badge/Years-1931–2025-success)](#)
+[![Format](https://img.shields.io/badge/Format-CSV-orange)](#)
+[![UUID](https://img.shields.io/badge/UUID-UUIDv5-blue)](#)
+[![License](https://img.shields.io/badge/license-MIT-red)](#)
 
-## 🌟 Dataset Highlights
+A **comprehensive, structured, and reproducible metadata dataset** of Bollywood film albums and songs spanning **over 90 years (1931–2025)**.
 
-- **📅 Temporal Coverage**: 9 decades (1930s–2020s) of Bollywood music history
-- **🎼 Multi-Modal**: Rich metadata including singers, composers, lyricists, ratings, and streaming URLs
-- **⚡ Quality-Tiered**: Pre-filtered datasets for high-quality songs (Rating ≥4.0 and ≥4.3)
-- **🔗 Streaming Ready**: Curated YouTube Music URLs for direct audio access
-- **📊 Research Grade**: UUID-based relational structure linking songs to albums
-- **🔓 Open Access**: Free for commercial and non-commercial use
-
-## 📁 Repository Structure
-
-```
-bollywood-songs-metadata/
-├── 📂 data/
-│   ├── 📁 raw/                          # Original scraped data by decade
-│   │   ├── 1930s/
-│   │   ├── 1940s/
-│   │   ├── 1950s/
-│   │   ├── 1960s/
-│   │   ├── 1970s/
-│   │   ├── 1980s/
-│   │   ├── 1990s/
-│   │   ├── 2000s/
-│   │   ├── 2010s/
-│   │   └── 2020s/
-│   │
-│   └── 📁 filtered/                     # Quality-filtered datasets
-│       ├── 📂 rating_4.0_plus/          # Good quality (Rating ≥ 4.0/5.0)
-│       └── 📂 rating_4.3_plus/          # Excellent quality (Rating ≥ 4.3/5.0)
-│
-├── 📂 schemas/                          # JSON schema definitions
-│   ├── songs_schema.json
-│   └── albums_schema.json
-│
-├── 📂 scraper progs/                    # Data collection scripts
-├── 📂 scripts/                          # Validation & processing utilities
-└── 📄 README.md                         # This file
-```
-
-## 📊 Data Schema
-
-### 🎵 Songs Table (`songs.csv`)
-| Field | Type | Description | Example |
-|-------|------|-------------|---------|
-| `song_uuid` | UUIDv4 | Unique identifier | `550e8400-e29b-41d4-a716-446655440000` |
-| `album_uuid` | UUIDv4 | Foreign key to album | `6ba7b810-9dad-11d1-80b4-00c04fd430c8` |
-| `track_number` | Integer | Position in album | `1`, `2`, `3` |
-| `song_title` | String | Song name | *"Dum Maro Dum"* |
-| `song_singers` | String | Vocalist(s) | *"Asha Bhosle, R. D. Burman"* |
-| `song_rating` | Float (0-5) | Quality rating | `4.5` |
-| `youtube_url` | URL | Official video | `https://youtube.com/watch?v=...` |
-| `music_yt_url_1` | URL | YouTube Music (Primary) | `https://music.youtube.com/watch?v=...` |
-| `music_yt_url_2` | URL | YouTube Music (Alt 1) | Backup link |
-| `music_yt_url_3` | URL | YouTube Music (Alt 2) | Backup link |
-
-### 💿 Albums Table (`albums.csv`)
-| Field | Type | Description | Example |
-|-------|------|-------------|---------|
-| `album_uuid` | UUIDv4 | Unique identifier | Primary Key |
-| `album_title` | String | Movie/Album name | *"Hare Rama Hare Krishna"* |
-| `album_year` | Integer | Release year | `1971` |
-| `album_category` | String | Type | *"Soundtrack"*, *"Album"*, *"Single"* |
-| `album_music_director` | String | Composer | *"R. D. Burman"* |
-| `album_lyricist` | String | Songwriter(s) | *"Anand Bakshi"* |
-| `album_label` | String | Music label | *"Saregama"*, *"T-Series"* |
-| `album_rating` | Float (0-5) | Overall rating | `4.2` |
-
-## 🚀 Quick Start
-
-### Python (Pandas)
-```python
-import pandas as pd
-
-# Load high-quality songs only (Rating >= 4.3)
-df = pd.read_csv('data/filtered/rating_4.3_plus/1970s/tobe_songs_1931_1944_final.csv')
-
-# Find all songs by Kishore Kumar from excellent albums
-kishore_classics = df[
-    df['song_singers'].str.contains('Kishore Kumar', na=False) &
-    (df['song_rating'] >= 4.5)
-]
-
-print(f"Found {len(kishore_classics)} classics")
-print(kishore_classics[['song_title', 'album_title', 'song_rating']].head())
-```
-
-### SQL Analysis
-```sql
--- Find top-rated duets from the 1970s
-SELECT song_title, album_title, song_singers, song_rating
-FROM songs
-WHERE song_singers LIKE '%,%'  -- Multiple singers = duet/collaboration
-  AND song_rating >= 4.5
-ORDER BY song_rating DESC
-LIMIT 20;
-```
-
-### Loading Album Relationships
-```python
-# Relational query example
-songs = pd.read_csv('data/raw/1970s/songs.csv')
-albums = pd.read_csv('data/raw/1970s/albums.csv')
-
-# Join to get full metadata
-full_data = songs.merge(
-    albums, 
-    on='album_uuid', 
-    suffixes=('', '_album')
-)
-
-# Filter by music director
-rd_burman_songs = full_data[
-    full_data['album_music_director'] == 'R. D. Burman'
-]
-```
-
-## 📈 Dataset Statistics
-
-| Metric | Count | Details |
-|--------|-------|---------|
-| **Total Decades** | 9 | 1930s through 2020s |
-| **Quality Tiers** | 3 | Raw, 4.0+, 4.3+ |
-| **Schema Version** | 1.0 | UUID-based relational |
-| **Update Frequency** | Quarterly | New decades added periodically |
-
-*Statistics update automatically via CI/CD pipeline*
-
-## 🎯 Use Cases
-
-### 🎧 **Music Streaming Applications**
-Build playlist generators using `music_yt_url_*` columns for direct audio streaming.
-
-### 🤖 **Machine Learning**
-- **Recommendation Systems**: Train on `album_music_director` + `song_rating` patterns
-- **Sentiment Analysis**: Correlate `lyricist` with `song_rating` across decades
-- **Genre Classification**: Use `album_category` + `album_year` features
-
-### 📊 **Data Visualization**
-```python
-# Example: Ratings distribution by decade
-import seaborn as sns
-import matplotlib.pyplot as plt
-
-df = pd.read_csv('data/merged/all_songs_4.0_plus.csv')
-sns.boxplot(data=df, x='decade', y='song_rating')
-plt.title('Song Quality Evolution (1940-2020)')
-plt.show()
-```
-
-### 🎓 **Academic Research**
-- Bollywood music evolution studies
-- Cultural analytics of playback singing trends
-- Network analysis of composer-lyricist-singer relationships
-
-
-
-## 🤝 Contributing
-
-We welcome contributions! Please follow these guidelines:
-
-1. **Data Quality**: Ensure ratings are from reliable sources (IMDb, Filmfare, or aggregate user ratings)
-2. **Schema Compliance**: Run `validate_data.py` before submitting
-3. **YouTube Links**: Verify `music_yt_url_*` are official uploads, not user-generated content
-4. **Decade Organization**: Place files in appropriate `data/raw/[DECADE]/` folder
-
-### Adding New Songs
-1. Fork the repository
-2. Add your CSV to the appropriate decade folder
-3. Ensure UUIDs are unique (use `uuid.uuid4()`)
-4. Validate with provided scripts
-5. Submit a Pull Request
-
-## ⚠️ Important Notes
-
-- **Metadata Only**: This dataset contains links and metadata, not audio files. Please respect copyright laws.
-- **YouTube Terms**: Usage of `music_yt_url_*` fields must comply with [YouTube's Terms of Service](https://www.youtube.com/t/terms).
-- **Rating Source**: Ratings are aggregated from public sources (IMDb, music streaming platforms, critic scores).
-- **Data Accuracy**: While we strive for accuracy, verify critical data points before commercial use.
-
-## 📜 License
-
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
-
-**You are free to:**
-- ✅ Use commercially
-- ✅ Modify and distribute
-- ✅ Use privately
-- ✅ Sublicense
-
-**Condition:** Attribution required (link back to this repo).
-
-## 🙏 Acknowledgments
-
-- **Data Sources**: IMDb, Wikipedia, Official Music Labels, YouTube Music
-- **Community Contributors**: [List contributors here]
-- **Inspiration**: The rich musical heritage of Indian Cinema
-
-## 📬 Contact & Support
-
-- **Issues**: [GitHub Issues](https://github.com/MrAsacker/bollywood-songs-metadata/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/MrAsacker/bollywood-songs-metadata/discussions)
-- **Email**: [your-email@example.com] *(optional)*
+This dataset is designed for:
+- 🎧 Music information retrieval
+- 📊 Data analysis & visualization
+- 🤖 Machine learning & recommendation systems
+- 🧠 Digital humanities & cultural research
+- 🏗️ Scalable music databases
 
 ---
 
-<div align="center">
+## 📌 Dataset Overview
 
-**⭐ Star this repo if you find it useful!**
+| Category | Count |
+|--------|------:|
+| 🎞️ Albums | **12,673** |
+| 🎵 Songs | **57,005** |
+| 📅 Year Range | **1931 – 2025** |
+| 📁 Format | CSV |
+| 🔑 Identifiers | Deterministic UUIDv5 |
+| 🔁 De-duplication | Yes (content-based) |
 
-Made with ❤️ for Bollywood music enthusiasts and data scientists
+---
 
-[Contributors](https://github.com/MrAsacker/bollywood-songs-metadata/graphs/contributors) • [Issues](https://github.com/MrAsacker/bollywood-songs-metadata/issues) • [Pull Requests](https://github.com/MrAsacker/bollywood-songs-metadata/pulls)
+## 📝 Data Dictionary
 
-</div>
+Detailed schema for the CSV files found in `data/raw/`.
+
+### 1. Albums Schema (`albums.csv`)
+
+Each row represents a unique film soundtrack or album.
+
+| Column Name | Type | Description | Example |
+| :--- | :--- | :--- | :--- |
+| `album_uuid` | `string` | **Primary Key**. Deterministic UUIDv5 generated from title + year. | `a3f9...` |
+| `album_title` | `string` | Normalized title of the film/album. | `Sholay` |
+| `album_year` | `int` | Release year of the album. | `1975` |
+| `music_director` | `string` | Primary composer(s) of the album. | `R.D. Burman` |
+| `label` | `string` | Music label (e.g., T-Series, Saregama), if available. | `Polydor` |
+| `album_url` | `string` | Source URL for the album metadata. | `https://myswar...` |
+
+### 2. Songs Schema (`songs.csv`)
+
+Each row represents a unique track within an album.
+
+| Column Name | Type | Description | Example |
+| :--- | :--- | :--- | :--- |
+| `song_uuid` | `string` | **Primary Key**. Deterministic UUIDv5 generated from album + track + title. | `c1b2...` |
+| `album_uuid` | `string` | **Foreign Key**. Links to the parent Album. | `a3f9...` |
+| `track_number` | `int` | Sequential order of the song in the album. | `1` |
+| `song_title` | `string` | Title of the track. | `Mehbooba Mehbooba` |
+| `singers` | `string` | Comma-separated list of singers. | `R.D. Burman` |
+| `1 youtube_url` | `string` | Direct link to the official music video or audio. | `https://youtu.be/...` |
+| `3 yt_music_urls`| `string` | Direct link to the official music track | `https://music.youtube.com/watch?v=.....`|
+
+## 🗂️ Dataset Structure
 ```
+
+data/
+├── raw/
+│   ├── albums/
+│   │   ├── albums_1931_1944.csv
+│   │   ├── albums_1945_1954.csv
+│   │   ├── ...
+│   │   └── albums_2015_2025.csv
+│   └── songs/
+│       ├── songs_1931_1944.csv
+│       ├── songs_1945_1954_completed.csv
+│       ├── ...
+│       └── songs_2015_2025.csv
+
+```
+## 📊 Verified Record Counts
+
+### 💿 Albums (12,673 total)
+
+| Period | Albums |
+|------|-------:|
+| 1931–1944 | 387 |
+| 1945–1954 | 1,066 |
+| 1955–1964 | 1,058 |
+| 1965–1974 | 1,079 |
+| 1975–1984 | 1,173 |
+| 1985–1994 | 1,245 |
+| 1995–2004 | 1,127 |
+| 2005–2014 | 1,551 |
+| 2015–2025 | 3,987 |
+
+---
+
+### 🎵 Songs (57,005 total)
+
+| Period | Songs |
+|------|------:|
+| 1931–1944 | 1,606 |
+| 1945–1954 | 6,507 |
+| 1955–1964 | 6,757 |
+| 1965–1974 | 5,411 |
+| 1975–1984 | 5,950 |
+| 1985–1994 | 6,862 |
+| 1995–2004 | 6,248 |
+| 2005–2014 | 8,191 |
+| 2015–2025 | 9,473 |
+
+---
+
+## 🧬 Deterministic UUID Design (UUIDv5)
+
+This dataset uses **UUID version 5** to ensure **stable, repeatable, and collision-free identifiers** across re-scrapes and future updates.
+
+---
+
+### 💿 Album UUID Generation
+
+Each album UUID is generated from a **normalized, human-readable album identity**.
+
+#### Inputs
+- `album_title`
+- `album_year`
+
+```python
+unique_album_string = f"{album_title}_{album_year}".lower().strip()
+album_uuid = uuid.uuid5(uuid.NAMESPACE_DNS, unique_album_string)
+````
+
+#### Why this works
+
+* Same album title + year → **same UUID forever**
+* Prevents duplicate albums across re-scrapes
+* Stable primary key for joins, updates, and merges
+* Human-explainable identity source
+
+---
+
+### 🎵 Song UUID Generation
+
+Each song UUID is generated **relative to its parent album**, ensuring correct hierarchy and uniqueness.
+
+#### Inputs
+
+* `album_uuid` (parent)
+* `track_number`
+* `song_title`
+
+```python
+unique_song_string = f"{album_uuid}_{track_number}_{song_title}".lower().strip()
+song_uuid = uuid.uuid5(uuid.NAMESPACE_DNS, unique_song_string)
+```
+
+#### Why this works
+
+* Same album + track + title → **same song UUID**
+* Allows identical song titles across different albums
+* Enforces album → song referential integrity
+* Ideal for relational databases and graph models
+
+---
+
+## 🧠 Relational Model
+
+```
+Album (album_uuid)
+ ├── album_title
+ ├── album_year
+ ├── music_director
+ └── label
+        │
+        └── Song (song_uuid)
+            ├── track_number
+            ├── song_title
+            ├── singers
+            └── youtube_url
+```
+
+
+
+---
+
+## 🧪 Example Use Cases
+
+* 🎼 Music recommendation engines
+* 📈 Trend analysis across decades
+* 🎤 Singer & composer network graphs
+* 🤖 ML training datasets
+* 🗃️ Music archival systems
+
+---
+
+## 📦 Kaggle & HuggingFace Ready
+
+* Flat CSV files
+* Stable UUID primary keys
+* Clear schema
+* Deterministic regeneration
+* Version-friendly structure
+
+Perfect for:
+
+* Kaggle Datasets
+* HuggingFace `datasets`
+* BigQuery / DuckDB / Postgres imports
+
+---
+
+## 📖 Cite This Dataset
+
+If you use this dataset in research, projects, or publications, please cite it as:
+
+```bibtex
+@dataset{bollywood_metadata_1931_2025,
+  title   = {Bollywood Songs and Albums Metadata Dataset (1931--2025)},
+  author  = {Asacker},
+  year    = {2026},
+  url     = {https://github.com/<your-username>/<your-repo>},
+  note    = {12,673 albums and 57,005 songs with deterministic UUIDv5 identifiers}
+}
+```
+
+---
+
+
+## ⚖️ License
+
+This project and dataset are released under the **MIT License**.
+
+You are free to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the dataset and code, subject to the terms of the MIT License.
+
+See the [LICENSE](LICENSE) file for full details.
+
+
+
+### **If this dataset helped you, consider giving the repo a ⭐ — it really helps.**
+
