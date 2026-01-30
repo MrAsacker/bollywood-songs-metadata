@@ -46,7 +46,6 @@ Each row represents a unique film soundtrack or album.
 | `album_year` | `int` | Release year of the album. | `1975` |
 | `music_director` | `string` | Primary composer(s) of the album. | `R.D. Burman` |
 | `label` | `string` | Music label (e.g., T-Series, Saregama), if available. | `Polydor` |
-| `album_url` | `string` | Source URL for the album metadata. | `https://myswar...` |
 
 ### 2. Songs Schema (`songs.csv`)
 
