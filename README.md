@@ -219,7 +219,7 @@ If you use this dataset in research, projects, or publications, please cite it a
   title   = {Bollywood Songs and Albums Metadata Dataset (1931--2025)},
   author  = {Asacker},
   year    = {2026},
-  url     = {https://github.com/<your-username>/<your-repo>},
+  url     = {https://github.com/MrAsacker/bollywood-songs-metadata},
   note    = {12,673 albums and 57,005 songs with deterministic UUIDv5 identifiers}
 }
 ```
